@@ -6,7 +6,7 @@ const DUMMY_DATA = [
 ]
 
 
-const container = d3.select('div')
+const container = d3.select('svg')
     .style('border', '1px solid red')
     .classed('container', true)
 
@@ -16,8 +16,8 @@ const bars = container
     .selectAll('div')
     .data(DUMMY_DATA)
     .enter()
-    .append('div')
+    .append('rect')
     .classed('bar', true)
-    .style('width', '50px')
-    .style('height', "150px")
+    .attr('width', '50px')
+    .attr('height', data => data.value * 15)
     .text(data => `This is ${data.region}`)
