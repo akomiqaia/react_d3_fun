@@ -1,33 +1,198 @@
-const DUMMY_DATA = [
-    {id: 'd1', value: 10, region: "USA"},
-    {id: 'd2  ', value: 11, region: "India"},
-    {id: 'd3', value: 12, region: "China"},
-    {id: 'd4', value: 6, region: "Germany"},
-    {id: 'd5', value: 2, region: "Russia"},
-]
+async function drawBars() {
 
-const xScale = d3.scaleBand()
-    .domain(DUMMY_DATA.map(dataPoint => dataPoint.region)) // let the scale funciton to know how many point of data it has
-    .rangeRound([0, 250]) //tells d3 how much space is avialable
-    .padding(0.1);
-
-const yScale = d3.scaleLinear()
-    .domain([0, 15]) // our way o f letting d3 min and max values that it has to map around
-    .range([200, 0]) 
-
-const container = d3.select('svg')
-    .style('border', '1px solid red')
-    .classed('container', true)
-
-    
-
-const bars = container
-    .selectAll('div')
-    .data(DUMMY_DATA)
-    .enter()
-    .append('rect')
-    .classed('bar', true)
-    .attr('width', xScale.bandwidth())
-    .attr('height', data => 200 - yScale(data.value))
-    .attr('x', data => xScale(data.region))
-    .attr('y', data => yScale(data.value))
+    // 1. Access data
+  
+    let dataset = await d3.csv("./data.csv")
+  
+    const summaryAccessor = d => d.Summary
+    const actualHoursAccessor = d => +d.HoursActual
+    const developerHoursAccessor = d => +d.DeveloperHoursActual
+  
+    // Only use the first estimate per task (with highest actual hours)
+    let usedTasks = {}
+    dataset = dataset.filter(d => {
+      const hours = actualHoursAccessor(d)
+      if (usedTasks[summaryAccessor(d)]) {
+        const hasHigherValue = hours > usedTasks[summaryAccessor(d)]
+        if (!hasHigherValue) return false
+      }
+      usedTasks[summaryAccessor(d)] = hours
+      return actualHoursAccessor(d) > 10
+    })
+  
+    const diffAccessor = d => +d.HoursEstimate - actualHoursAccessor(d)
+    dataset = dataset.filter(d => (
+      diffAccessor(d) >= -50
+      && diffAccessor(d) <= 50
+    ))
+    const yAccessor = d => d.length
+  
+    // 2. Create chart dimensions
+  
+    const width = 600
+    let dimensions = {
+      width: width,
+      height: width * 0.5,
+      margin: {
+        top: 35,
+        right: 10,
+        bottom: 50,
+        left: 50,
+      },
+    }
+    dimensions.boundedWidth = dimensions.width
+      - dimensions.margin.left
+      - dimensions.margin.right
+    dimensions.boundedHeight = dimensions.height
+      - dimensions.margin.top
+      - dimensions.margin.bottom
+  
+    // 3. Draw canvas
+  
+    const wrapper = d3.select("#wrapper")
+      .append("svg")
+        .attr("width", dimensions.width)
+        .attr("height", dimensions.height)
+  
+    const bounds = wrapper.append("g")
+        .style("transform", `translate(${
+          dimensions.margin.left
+        }px, ${
+          dimensions.margin.top
+        }px)`)
+  
+    const background = bounds.append("g")
+  
+    // init static elements
+    bounds.append("g")
+        .attr("class", "bins")
+    bounds.append("line")
+        .attr("class", "mean")
+    bounds.append("g")
+        .attr("class", "x-axis")
+        .style("transform", `translateY(${
+          dimensions.boundedHeight
+        }px)`)
+      .append("text")
+        .attr("class", "x-axis-label")
+  
+    // 4. Create scales
+  
+    const xScale = d3.scaleLinear()
+      .domain(d3.extent(dataset, diffAccessor))
+      .range([0, dimensions.boundedWidth])
+      .nice()
+  
+    const binsGenerator = d3.histogram()
+      .domain(xScale.domain())
+      .value(diffAccessor)
+      .thresholds(30)
+  
+    const bins = binsGenerator(dataset)
+  
+    const yScale = d3.scaleLinear()
+      .domain([0, d3.max(bins, yAccessor)])
+      .range([dimensions.boundedHeight, 0])
+      .nice()
+  
+    // 5. Draw data
+  
+    const barPadding = 1.5
+  
+    let binGroups = bounds.select(".bins")
+      .selectAll(".bin")
+      .data(bins)
+  
+    binGroups.exit()
+        .remove()
+  
+    const newBinGroups = binGroups.enter().append("g")
+        .attr("class", "bin")
+  
+    newBinGroups.append("rect")
+  
+    // update binGroups to include new points
+    binGroups = newBinGroups.merge(binGroups)
+  
+    const barRects = binGroups.select("rect")
+        .attr("x", d => xScale(d.x0) + barPadding)
+        .attr("y", d => yScale(yAccessor(d)))
+        .attr("height", d => (
+          dimensions.boundedHeight - yScale(yAccessor(d))
+        ))
+        .attr("width", d => d3.max([
+          0,
+          xScale(d.x1) - xScale(d.x0) - barPadding
+        ]))
+  
+    const mean = d3.mean(dataset, diffAccessor)
+  
+    const meanLine = bounds.selectAll(".mean")
+        .attr("x1", xScale(mean))
+        .attr("x2", xScale(mean))
+        .attr("y1", -20)
+        .attr("y2", dimensions.boundedHeight)
+  
+    const meanLabel = bounds.append("text")
+        .attr("class", "mean-label")
+        .attr("x", xScale(mean))
+        .attr("y", -25)
+        .text("mean")
+  
+    // 6. Draw peripherals
+  
+    const xAxisGenerator = d3.axisBottom()
+      .scale(xScale)
+  
+    const xAxis = bounds.select(".x-axis")
+      .call(xAxisGenerator)
+  
+    const xAxisLabel = xAxis.select(".x-axis-label")
+        .attr("x", dimensions.boundedWidth / 2)
+        .attr("y", dimensions.margin.bottom - 10)
+        .text("Hours over-estimated")
+  
+    const backgroundLeft = background.append("rect")
+        .attr("class", "background left-side-background")
+        .attr("y", -20)
+        .attr("width", dimensions.boundedWidth / 2)
+        .attr("height", dimensions.boundedHeight + 20)
+  
+    const backgroundRight = background.append("rect")
+        .attr("class", "background right-side-background")
+        .attr("x", dimensions.boundedWidth / 2 + 1)
+        .attr("y", -20)
+        .attr("width", dimensions.boundedWidth / 2 - 1)
+        .attr("height", dimensions.boundedHeight + 20)
+  
+    const leftSideLabel = background.append("text")
+        .attr("class", "label left-side-label")
+        .attr("x", 10)
+        .attr("y", 0)
+        .text("Under-estimated")
+  
+    const rightSideLabel = background.append("text")
+        .attr("class", "label right-side-label")
+        .attr("x", dimensions.boundedWidth - 10)
+        .attr("y", 0)
+        .text("Over-estimated")
+  
+    // 7. Set up interactions
+  
+    binGroups.select("rect")
+        .on("mouseenter", onMouseEnter)
+        .on("mouseleave", onMouseLeave)
+  
+    const tooltip = d3.select("#tooltip")
+    function onMouseEnter(datum) {
+  
+      tooltip.style("opacity", 1)
+  
+          .text([
+    }
+  
+    function onMouseLeave() {
+    }
+  
+  }
+  drawBars()
