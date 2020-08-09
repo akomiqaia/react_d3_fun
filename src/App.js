@@ -8,7 +8,7 @@ function App() {
   useEffect(() => {
     setData(dataSet)
     console.log(data)
-  }, [])
+  }, [data])
 
   return (
     <div className="App">

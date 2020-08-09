@@ -50,7 +50,7 @@ const Chart = ({ width, height, dataSet }) => {
         .call(yAxis)
 
       svg.append("path")
-        .data(dataSet)
+        .datum(dataSet)
         .attr("fill", "none")
         .attr("stroke", "steelblue")
         .attr("stroke-width", 1.5)
@@ -58,7 +58,7 @@ const Chart = ({ width, height, dataSet }) => {
         .attr("stroke-linecap", "round")
         .attr("d", line);
 
-  }, [dataSet]);
+  }, [dataSet, height, width]);
 
   // useEffect(() => {
   //   // draw();
