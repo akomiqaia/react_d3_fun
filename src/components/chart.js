@@ -5,7 +5,6 @@ import * as d3 from "d3";
 // import {drawChart, initChart} from '../utils/drawChart'
 
 const Chart = ({ width, height, dataSet }) => {
-  const percentageData = dataSet.map((x) => x.percentage);
   const timeData = dataSet.map((x) => x.usageDate);
   dataSet = dataSet.map(({usageDate, percentage}) => ({usageDate, percentage}), {y: " %"})
   const ref = useRef();
@@ -55,60 +54,7 @@ const Chart = ({ width, height, dataSet }) => {
       svg.append("g")
         .call(yAxis)
 
-  }, [dataSet]);
-
-  // useEffect(() => {
-  //   // draw();
-  // }, [percentageData]);
-
-  // const draw = () => {
-  //   const svg = d3.select(ref.current);
-  //   var selection = svg.selectAll("rect").data(percentageData);
-  //   const yScale = d3
-  //     .scaleLinear()
-  //     .domain([0, d3.max(percentageData)])
-  //     .range([height, 0]);
-  //   const xScale = d3.scaleBand().range([0, width]).padding(0);
-  //   selection
-  //     .transition()
-  //     .duration(300)
-  //     .attr("height", (d) => yScale(d))
-  //     .attr("y", (d) => height - yScale(d));
-
-  //   selection
-  //     .enter()
-  //     .append("rect")
-  //     .attr("transform", "translate(" + 20 + "," + -20 + ")")
-  //     .attr("x", (d, i) => i * 50)
-  //     .attr("y", (d) => height)
-  //     .attr("padding", 0.1)
-  //     .attr("width", 40)
-  //     .attr("height", 0)
-  //     .attr("fill", "orange")
-  //     .transition()
-  //     .duration(300)
-  //     .attr("height", (d) => yScale(d))
-  //     .attr("y", (d) => height - yScale(d));
-
-  //   selection
-  //     .exit()
-  //     .transition()
-  //     .duration(300)
-  //     .attr("y", (d) => height)
-  //     .attr("height", 0)
-  //     .remove();
-
-  //   // var g = svg
-  //   //   .append("g")
-  //   //   .attr("transform", "translate(" + 20 + "," + -20 + ")");
-  //   // xScale.domain(timeData);
-  //   // g.append("g")
-  //   //   .attr("transform", "translate(0," + height + ")")
-  //   //   .call(d3.axisBottom(xScale));
-  //   // g.append("g").call(d3.axisLeft(yScale));
-
-  //   // let y_axis = d3.axisLeft().scale(yScale)
-  // };
+  }, [dataSet, height, timeData, width]);
 
   return (
     <div>
