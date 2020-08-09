@@ -19,11 +19,11 @@ function App() {
   useEffect(() => {
     setData(dataSet)
     console.log(data)
-  }, [data])
+  }, )
 
   return (
         <div className="App">
-            <Chart width={width} height={500} dataSet={data} dimensions={dimensions} />
+            <Chart width={500} height={500} dataSet={data} dimensions={dimensions} />
         </div>
   );
 }
