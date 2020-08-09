@@ -1,13 +1,19 @@
-import React from 'react';
+import React, {useEffect, useState} from 'react';
 import './App.css';
-import Circle from './components/circle'
-
+import Chart from './components/chart'
+import dataSet from './utils/MOCK_DATA'
 
 function App() {
+  const [data, setData] = useState(dataSet)
+  useEffect(() => {
+    setData(dataSet)
+    console.log(data)
+  }, [])
+
   return (
     <div className="App">
-      <Circle />
-    </div>
+            <Chart width={500} height={500} dataSet={data} />
+        </div>
   );
 }
 
