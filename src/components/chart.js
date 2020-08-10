@@ -101,28 +101,28 @@ const Chart = ({ width, height, dataSet }) => {
       }
 
       function hover() {
-      let bisect = d3.bisector(d => d.date).left,
+      let bisect = d3.bisector(d => new Date(d.usageDate)).left,
 			format = d3.format("+.0%"),
 			dateFormat = d3.timeFormat("%Y-%b-%d")
 
-		var focus = svg.append("g")
+		svg.append("g")
 			.attr("class", "focus")
 			.style("display", "none");
 
-		focus.append("line")
+		svg.append("line")
 			.attr("stroke", "#666")
 			.attr("stroke-width", 1)
 			.attr("y1", -height + margin.top)
 			.attr("y2", -margin.bottom);
 
-		focus.append("circle")
+		svg.append("circle")
 			.attr("class", "circle")
 			.attr("r", 5)
 			.attr("dy", 5)
 			.attr("stroke", "steelblue")
 			.attr("fill", "#fff");
 
-		focus.append("text")
+		svg.append("text")
 			.attr("text-anchor", "middle")
 			.attr("dy", ".35em");
 
@@ -132,31 +132,31 @@ const Chart = ({ width, height, dataSet }) => {
 			.attr("y", margin.top)
 			.attr("width", width - margin.right - margin.left - 1)
 			.attr("height", height - margin.bottom - margin.top)
-			.on("mouseover", () => focus.style("display", null))
-			.on("mouseout", () => focus.style("display", "none"))
+			// .on("mouseover", () => focus.style("display", null))
+			// .on("mouseout", () => focus.style("display", "none"))
       .on("mousemove", mousemove);
       
       function mousemove() {
 
         var x0 = x.invert(d3.mouse(this)[0]);
   
-        var i = bisect(data, x0, 1),
-          d0 = data[i - 1],
-          d1 = data[i],
-          d = x0 - d0.date > d1.date - x0 ? d1 : d0;
+        var i = bisect(dataSet, x0, 1),
+          d0 = dataSet[i - 1],
+          d1 = dataSet[i],
+          d = x0 - d0.usageDate > d1.usageDate - x0 ? d1 : d0;
   
-        focus.select("line")
+        svg.select("line")
           .attr("transform", 
-            "translate(" + x(d.date) + "," + height + ")");
+            "translate(" + x(d.usageDate) + "," + height + ")");
   
-        focus.selectAll(".circle")
+        svg.selectAll(".circle")
           .attr("transform", 
-            "translate(" + x(d.date) + "," + y(d.value) + ")");
+            "translate(" + x(d.usageDate) + "," + y(d.percentage) + ")");
   
-        focus.select("text")
+        svg.select("text")
           .attr("transform", 
-            "translate(" + x(d.date) + "," + (height + margin.bottom) + ")")
-          .text(dateFormat(d.date));
+            "translate(" + x(d.usageDate) + "," + (height + margin.bottom) + ")")
+          .text(dateFormat(d.usageDate));
       }
       }
   }, [dataSet, height, timeData, width]);

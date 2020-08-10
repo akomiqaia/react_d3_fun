@@ -42,3 +42,9 @@
 .chart {
   width: 40vw;
 }
+
+
+.overlay {
+	fill: none;
+	pointer-events: all;
+}
