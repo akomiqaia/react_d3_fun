@@ -5,8 +5,10 @@ import * as d3 from "d3";
 // import {drawChart, initChart} from '../utils/drawChart'
 
 const Chart = ({ width, height, dataSet }) => {
+  dataSet = dataSet.sort((a, b) => new Date(a.usageDate) - new Date(b.usageDate))
+
   const timeData = dataSet.map((x) => new Date(x.usageDate));
-  console.log(timeData.map(x => new Date(x)))
+
   dataSet = dataSet.map(
     ({ usageDate, percentage }) => ({ usageDate, percentage }),
     { y: " %" }
@@ -80,7 +82,7 @@ const Chart = ({ width, height, dataSet }) => {
     svg.append("g")
       .call(yAxis);
     svg.call(zoom)
-    svg.call(hover)
+    // svg.call(hover)
     function zoom(svg) {
         const extent = [
           [margin.left, margin.top], 
@@ -100,65 +102,65 @@ const Chart = ({ width, height, dataSet }) => {
         }
       }
 
-      function hover() {
-      let bisect = d3.bisector(d => new Date(d.usageDate)).left,
-			format = d3.format("+.0%"),
-			dateFormat = d3.timeFormat("%Y-%b-%d")
+    //   function hover() {
+    //   let bisect = d3.bisector(d => new Date(d.usageDate)).left,
+		// 	format = d3.format("+.0%"),
+		// 	dateFormat = d3.timeFormat("%Y-%b-%d")
 
-		svg.append("g")
-			.attr("class", "focus")
-			.style("display", "none");
+		// svg.append("g")
+		// 	.attr("class", "focus")
+		// 	.style("display", "none");
 
-		svg.append("line")
-			.attr("stroke", "#666")
-			.attr("stroke-width", 1)
-			.attr("y1", -height + margin.top)
-			.attr("y2", -margin.bottom);
+		// svg.append("line")
+		// 	.attr("stroke", "#666")
+		// 	.attr("stroke-width", 1)
+		// 	.attr("y1", -height + margin.top)
+		// 	.attr("y2", -margin.bottom);
 
-		svg.append("circle")
-			.attr("class", "circle")
-			.attr("r", 5)
-			.attr("dy", 5)
-			.attr("stroke", "steelblue")
-			.attr("fill", "#fff");
+		// svg.append("circle")
+		// 	.attr("class", "circle")
+		// 	.attr("r", 5)
+		// 	.attr("dy", 5)
+		// 	.attr("stroke", "steelblue")
+		// 	.attr("fill", "#fff");
 
-		svg.append("text")
-			.attr("text-anchor", "middle")
-			.attr("dy", ".35em");
+		// svg.append("text")
+		// 	.attr("text-anchor", "middle")
+		// 	.attr("dy", ".35em");
 
-		let overlay = svg.append("rect")
-			.attr("class", "overlay")
-			.attr("x", margin.left)
-			.attr("y", margin.top)
-			.attr("width", width - margin.right - margin.left - 1)
-			.attr("height", height - margin.bottom - margin.top)
-			// .on("mouseover", () => focus.style("display", null))
-			// .on("mouseout", () => focus.style("display", "none"))
-      .on("mousemove", mousemove);
+		// let overlay = svg.append("rect")
+		// 	.attr("class", "overlay")
+		// 	.attr("x", margin.left)
+		// 	.attr("y", margin.top)
+		// 	.attr("width", width - margin.right - margin.left - 1)
+		// 	.attr("height", height - margin.bottom - margin.top)
+		// 	// .on("mouseover", () => focus.style("display", null))
+		// 	// .on("mouseout", () => focus.style("display", "none"))
+    //   .on("mousemove", mousemove);
       
-      function mousemove() {
+    //   function mousemove() {
 
-        var x0 = x.invert(d3.mouse(this)[0]);
+    //     var x0 = x.invert(d3.mouse(this)[0]);
   
-        var i = bisect(dataSet, x0, 1),
-          d0 = dataSet[i - 1],
-          d1 = dataSet[i],
-          d = x0 - d0.usageDate > d1.usageDate - x0 ? d1 : d0;
+    //     var i = bisect(dataSet, x0, 1),
+    //       d0 = dataSet[i - 1],
+    //       d1 = dataSet[i],
+    //       d = x0 - d0.usageDate > d1.usageDate - x0 ? d1 : d0;
   
-        svg.select("line")
-          .attr("transform", 
-            "translate(" + x(d.usageDate) + "," + height + ")");
+    //     svg.select("line")
+    //       .attr("transform", 
+    //         "translate(" + x(d.usageDate) + "," + height + ")");
   
-        svg.selectAll(".circle")
-          .attr("transform", 
-            "translate(" + x(d.usageDate) + "," + y(d.percentage) + ")");
+    //     svg.selectAll(".circle")
+    //       .attr("transform", 
+    //         "translate(" + x(d.usageDate) + "," + y(d.percentage) + ")");
   
-        svg.select("text")
-          .attr("transform", 
-            "translate(" + x(d.usageDate) + "," + (height + margin.bottom) + ")")
-          .text(dateFormat(d.usageDate));
-      }
-      }
+    //     svg.select("text")
+    //       .attr("transform", 
+    //         "translate(" + x(d.usageDate) + "," + (height + margin.bottom) + ")")
+    //       .text(dateFormat(d.usageDate));
+    //   }
+    //   }
   }, [dataSet, height, timeData, width]);
 
   return (
