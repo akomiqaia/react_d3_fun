@@ -6,6 +6,7 @@ import * as d3 from "d3";
 
 const Chart = ({ width, height, dataSet }) => {
   const timeData = dataSet.map((x) => x.usageDate);
+  console.log(timeData.map(x => new Date(x)))
   dataSet = dataSet.map(
     ({ usageDate, percentage }) => ({ usageDate, percentage }),
     { y: " %" }
@@ -15,10 +16,10 @@ const Chart = ({ width, height, dataSet }) => {
   useEffect(() => {
     let margin = { top: 20, right: 30, bottom: 30, left: 40 };
     let x = d3
-      .scaleBand()
-      .domain(timeData)
+      .scaleUtc()
+      .domain(d3.extent(dataSet, d => new Date(d.usageDate)))
       .range([margin.left, width - margin.right])
-      .padding(0.1)
+      // .padding(0.1
 
     let y = d3
       .scaleLinear()
@@ -71,27 +72,31 @@ const Chart = ({ width, height, dataSet }) => {
       .call(zoom)
 
         // ucoment this to get bar graph
-    svg
-      .append("g")
-        .attr("class", "bars")
-        .attr("fill", "steelblue")
-      .selectAll("rect")
-      .data(dataSet)
-      .join("rect")
-        .attr("x", (d) => x(d.usageDate))
-        .attr("y", (d) => y(d.percentage))
-        .attr("height", (d) => y(0) - y(d.percentage))
-        .attr("width", x.bandwidth());
+    // svg
+    //   .append("g")
+    //     .attr("class", "bars")
+    //     .attr("fill", "steelblue")
+    //   .selectAll("rect")
+    //   .data(dataSet)
+    //   .join("rect")
+    //     .attr("x", (d) => x(d.usageDate))
+    //     .attr("y", (d) => y(d.percentage))
+    //     .attr("height", (d) => y(0) - y(d.percentage))
+    //     .attr("width", x.bandwidth());
    
              //uncomment this to get line graph
-    // svg.append("path")
-    //     .datum(dataSet)
-    //     .attr("fill", "none")
-    //     .attr("stroke", "steelblue")
-    //     .attr("stroke-width", 1.5)
-    //     .attr("stroke-linejoin", "round")
-    //     .attr("stroke-linecap", "round")
-    //     .attr("d", line);
+    const line = d3.line()
+        .defined(d => !isNaN(d.percentage))
+        .x(d => x(d.usageDate))
+        .y(d => y(d.percentage))
+    svg.append("path")
+        .datum(dataSet)
+        .attr("fill", "none")
+        .attr("stroke", "steelblue")
+        .attr("stroke-width", 1.5)
+        .attr("stroke-linejoin", "round")
+        .attr("stroke-linecap", "round")
+        .attr("d", line);
 
     svg.append("g")
       .attr("class", "x-axis")

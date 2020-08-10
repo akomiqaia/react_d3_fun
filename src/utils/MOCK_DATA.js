@@ -1,68 +1,21 @@
-const dataSet = [{
-    "id": 1,
-    "usageDate": "May/20",
-    "percentage": 29
-  }, {
-    "id": 2,
-    "usageDate": "May/20",
-    "percentage": 56
-  }, {
-    "id": 3,
-    "usageDate": "1/20",
-    "percentage": 85
-  }, {
-    "id": 4,
-    "usageDate": "12/19",
-    "percentage": 75
-  }, {
-    "id": 5,
-    "usageDate": "1/20",
-    "percentage": 81
-  }, {
-    "id": 6,
-    "usageDate": "3/20",
-    "percentage": 70
-  }, {
-    "id": 7,
-    "usageDate": "9/19",
-    "percentage": 58
-  }, {
-    "id": 8,
-    "usageDate": "7/20",
-    "percentage": 75
-  }, {
-    "id": 9,
-    "usageDate": "6/20",
-    "percentage": 46
-  }, {
-    "id": 10,
-    "usageDate": "1/18",
-    "percentage": 36
-  }, {
-    "id": 5,
-    "usageDate": "1/180",
-    "percentage": 81
-  }, {
-    "id": 6,
-    "usageDate": "3/18",
-    "percentage": 70
-  }, {
-    "id": 7,
-    "usageDate": "9/18",
-    "percentage": 58
-  }, {
-    "id": 8,
-    "usageDate": "7/18",
-    "percentage": 75
-  }, {
-    "id": 9,
-    "usageDate": "6/18",
-    "percentage": 46
-  }, {
-    "id": 10,
-    "usageDate": "1/18",
-    "percentage": 36
-  }
+const dataSet = [
+  {usageDate: "2007-04-25", percentage: 98.84},
+  {usageDate: "2007-04-29", percentage: 99.8},
+  {usageDate: "2007-04-26", percentage: 99.92},
+  {usageDate: "2007-05-01", percentage: 99.47},
+  {usageDate: "2007-05-02", percentage: 100.39},
+  {usageDate: "2007-05-03", percentage: 100.4},
+  {usageDate: "2007-05-04", percentage: 100.81},
+  {usageDate: "2007-05-07", percentage: 103.92},
+  {usageDate: "2007-05-08", percentage: 105.06},
+  {usageDate: "2007-05-09", percentage: 106.88},
+  {usageDate: "2007-05-09", percentage: 107.34},
+  {usageDate: "2007-05-10", percentage: 108.74},
+  {usageDate: "2007-05-13", percentage: 109.36},
+  {usageDate: "2007-05-14", percentage: 107.52},
+  {usageDate: "2007-05-15", percentage: 107.34},
+  {usageDate: "2007-05-16", percentage: 109.44},
+  {usageDate: "2007-05-17", percentage: 110.02}
 ]
-  
+
 export  default dataSet
